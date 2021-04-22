@@ -8,15 +8,16 @@ import {
     setMinutes,
     addDays,
     getDate,
-    getYear,
     getMonth,
+    getYear
   } from 'date-fns';
+import axios from 'axios';
 
 
 const initialValues = {
     name:'',
     birthDate: null,
-    bookDate:null,
+    bookDate: null,
 }
 
 const validationSchema = Yup.object({
@@ -26,10 +27,22 @@ const validationSchema = Yup.object({
 })
  
 const Formulario = () =>{
-
+ 
     const onSubmit = values =>{
-        console.log(values);
-        console.log(values);
+        let ano = getYear(values.birthDate),
+            mes = getMonth(values.birthDate),
+            dia = getDate(values.birthDate)
+        console.log(dia, mes+1, ano);
+        console.log(`Vacina dia ${values.bookDate.getDate()} as ${values.bookDate.getHours()}:`);
+
+        const patient = {
+            name: values.name,
+            birthDate: `${getDate(values.birthDate)}/${getMonth(values.birthDate)}/${getYear(values.birthDate)}`,
+            bookDate: values.bookDate
+        }
+
+        axios.post('http://localhost:4000/schedule', patient)
+            .then(res => console.log(res.data))
     }
 
     return(
