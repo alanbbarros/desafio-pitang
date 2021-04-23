@@ -1,3 +1,4 @@
+/*
 .App {
   display: flex;
   justify-content: center@
@@ -22,7 +23,6 @@ textarea {
   background-image: none;
   border: 1px solid #ccc;
   border-radius: 4px;
-  /* margin-bottom: 20px; */
 }
 
 .form-control {
@@ -32,3 +32,5 @@ textarea {
 .error {
   color: red;
 }
+
+*/

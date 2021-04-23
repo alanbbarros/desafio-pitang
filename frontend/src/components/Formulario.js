@@ -9,9 +9,10 @@ import {
     addDays,
     getDate,
     getMonth,
-    getYear
+    getYear,
+    getHours
   } from 'date-fns';
-import axios from 'axios';
+import axios from '../utils/api';
 
 
 const initialValues = {
@@ -29,19 +30,25 @@ const validationSchema = Yup.object({
 const Formulario = () =>{
  
     const onSubmit = values =>{
-        let ano = getYear(values.birthDate),
-            mes = getMonth(values.birthDate),
-            dia = getDate(values.birthDate)
-        console.log(dia, mes+1, ano);
-        console.log(`Vacina dia ${values.bookDate.getDate()} as ${values.bookDate.getHours()}:`);
+
+        //PEGA IDADE DO PACIENTE
+        const today = new Date()
+        let patientAge = today.getFullYear() - values.birthDate.getYear();
+        const m = today.getMonth() - values.birthDate.getMonth();
+        if (m < 0 || (m == 0 && today.getDate() < values.birthDate.getDate())){
+            patientAge = patientAge -1;
+        };
+
 
         const patient = {
             name: values.name,
             birthDate: `${getDate(values.birthDate)}/${getMonth(values.birthDate)}/${getYear(values.birthDate)}`,
-            bookDate: values.bookDate
+            bookDate: `${getDate(values.bookDate)}/${getMonth(values.bookDate)}/${getYear(values.bookDate)}`,
+            bookHour: `${getHours(values.bookDate)}`,
+            isVaccinated: false
         }
 
-        axios.post('http://localhost:4000/schedule', patient)
+        axios.post('/schedules', patient)
             .then(res => console.log(res.data))
     }
 

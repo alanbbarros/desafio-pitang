@@ -13,6 +13,14 @@ const patientSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    bookHour:{
+        type: String,
+        required: true
+    },
+    isVaccinated:{
+        type: Boolean,
+        required: true
+    }
 }, {
     timestamps: true,
 });

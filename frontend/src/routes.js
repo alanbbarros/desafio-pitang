@@ -4,8 +4,8 @@ import Nurse from './pages/Nurse';
 import Scheduling from './pages/Scheduling'
 
 const listOfRoutes = [{
-    path:'/nurse',
-    name:'nurse',
+    path:'/schedules',
+    name:'schedules',
     component: Nurse,
 },
 {

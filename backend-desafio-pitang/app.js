@@ -10,11 +10,10 @@ app.use(bodyParser.json());
 const patientRoute = require('./src/routes/patient.route');
 
 app.use(cors());
-app.use('/schedule', patientRoute)
-
+app.use('/', patientRoute);
 
 app.get('/', (req, res) =>{
-    res.send('testinggggag');
+    res.send('app.js');
 });
 
 ///CONNECT TO DB
