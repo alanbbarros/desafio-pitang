@@ -7,7 +7,7 @@ const patientController = require('../controller/patient.controller');
 // GET THE PATIENT
 router.get('/schedules', patientController.getSchedules);
 router.post('/schedules', patientController.setBooking);
-router.put('/schedules/:bookingId', patientController.pickBooking)
+router.put('/schedules/:bookingId', patientController.updateBooking)
 router.delete('/schedules/:bookingId', patientController.deleteBooking)
 
 //SUBMIT PATIENT

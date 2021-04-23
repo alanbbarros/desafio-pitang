@@ -1,46 +1,71 @@
 
 const { json } = require('body-parser');
 const UserTeste = require('../models/patient.model');
+var firstSortBy = require('thenby');
 
 class patientController{
 //GET 
 
     async getSchedules(req, res){
+
+
         try{
             const data = await UserTeste.find();
-            res.json(data)
+
+            const newData = data.sort(firstSortBy('bookDay').thenBy('bookHour'))
+            res.json(newData)
         }catch(e){
             res.json({message: `${e} cai aqui`})
         }
     }
 
     async setBooking(req, res){
-        const data = req.body
-        console.log(data.birthDate);
-
-        
-        //VERIFICA A QUANTIDADE DE AGENDAMENTOS PARA ESSE HORÁRIO
-        const hourCount = await UserTeste.countDocuments({bookdate: data.bookDate})
-        console.log(hourCount);
-
         try{
-        const savedPatient = await UserTeste.create({
-            name: data.name,
-            birthDate: data.birthDate,
-            bookDate: data.bookDate,
-            bookHour: data.bookHour,
-            isVaccinated: false
-        })
-        res.send({savedPatient})
-        console.log(savedPatient);
-        }catch(error){
+        const data = req.body
+
+        //VERIFICA A QUANTIDADE DE AGENDAMENTOS PARA ESSE HORÁRIO
+        const maxHorario = 2;
+        const maxDia = 20;
+        const hourCount = await UserTeste.find({bookHour: data.bookHour, bookDate: data.bookDate})
+        const dayCount = await UserTeste.find({bookDate: data.bookDate})
+        const younger = await UserTeste.find({bookDate: data.bookDate, bookHour: data.bookHour, birthDate: { $gte: data.birthDate}})
+
+        if(dayCount.length < maxDia && hourCount.length < maxHorario){
+            const savedPatient = await UserTeste.create({
+                name: data.name,
+                birthDate: data.birthDate,
+                bookDate: data.bookDate,
+                bookHour: data.bookHour,
+                isVaccinated: false
+            })
+            res.send({savedPatient})
+        }
+        else if(younger){
+            const replaceBooking = await UserTeste.findOneAndReplace(
+                {bookDate: data.bookDate, bookHour: data.bookHour, birthDate: { $gte: data.birthDate}},
+                {
+                    name: data.name,
+                    birthDate: data.birthDate,
+                    bookDate: data.bookDate,
+                    bookHour: data.bookHour,
+                    isVaccinated: false
+                }
+                )
+            res.send(replaceBooking)
+        }
+        else{
+            res.send({message: 'testando aqui '})
+        }
+        }catch(e){
             res.json({message: `${error} CAI AQUIII`})
         }
     }
 
-    async pickBooking(req, res){
+    async updateBooking(req, res){
+        const { bookingId } = req.params;
         try{
-        const data = await UserTeste.findById(req.params.bookingId)
+        console.log(req.body);
+        const data = await UserTeste.findByIdAndUpdate(bookingId, req.body)
         res.json(data);
         }catch(e){
             res.json({message: `${e} caimo pickBooking`})
@@ -51,6 +76,7 @@ class patientController{
         const { bookingId } = req.params;
         try{
             const schedule = await UserTeste.findByIdAndDelete(bookingId);
+            res.json(schedule)
         }catch(e){
             console.log({message: `${e} PARAMO NO DELETEBOOKING`});
         }
