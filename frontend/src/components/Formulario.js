@@ -13,6 +13,12 @@ import {
     getHours
   } from 'date-fns';
 import axios from '../utils/api';
+import {
+    Button, Col, Row, Card
+  } from 'react-bootstrap';
+import Toast from 'react-toastify';
+import '../App.css';
+import { toast, ToastContainer } from 'react-toastify';
 
 
 const initialValues = {
@@ -26,45 +32,73 @@ const validationSchema = Yup.object({
     birthDate: Yup.date().required('Data de Nascimento Obrigatória!'),
     bookDate: Yup.date().required('Agendamento Obrigatório!'),
 })
+
+let submitSucess = false;
  
 const Formulario = () =>{
  
     const onSubmit = values =>{
-
         //PEGA IDADE DO PACIENTE
-        const today = new Date()
-        let patientAge = today.getFullYear() - values.birthDate.getYear();
-        const m = today.getMonth() - values.birthDate.getMonth();
-        if (m < 0 || (m == 0 && today.getDate() < values.birthDate.getDate())){
-            patientAge = patientAge -1;
-        };
-
+        //const today = new Date()
+        //let patientAge = today.getFullYear() - values.birthDate.getYear();
+        //const m = today.getMonth() - values.birthDate.getMonth();
+        //if (m < 0 || (m == 0 && today.getDate() < values.birthDate.getDate())){
+        //    patientAge = patientAge -1;
+        //};
 
         const patient = {
             name: values.name,
-            birthDate: `${getDate(values.birthDate)}/${getMonth(values.birthDate)}/${getYear(values.birthDate)}`,
-            bookDate: `${getDate(values.bookDate)}/${getMonth(values.bookDate)}/${getYear(values.bookDate)}`,
+            birthDate: `${getDate(values.birthDate)}/${getMonth(values.birthDate)+1}/${getYear(values.birthDate)}`,
+            bookDate: `${getDate(values.bookDate)}/${getMonth(values.bookDate)+1}/${getYear(values.bookDate)}`,
             bookHour: `${getHours(values.bookDate)}`,
             isVaccinated: false
         }
+        console.log(patient.bookhour === 9);
 
-        axios.post('/schedules', patient)
-            .then(res => console.log(res.data))
+        try{
+            axios.post('/schedules', patient)
+            submitSucess = true;
+            return(
+                <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                />
+            )
+        }catch(e){
+            alert(e.response.data.message)
+        }
+
     }
 
     return(
         <div>
-        <h1> Agendamento Vacina</h1>
+        <h2>Agendamento</h2>
         <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={onSubmit}
+        onSubmit={async (values, { resetForm }) => {
+            await onSubmit(values);
+
+            submitSucess ? resetForm() : console.log('nao deu certo');
+        }}
         > 
             <Form autoComplete="off">
+                <Col>
+
+                <Card>
                 <label htmlFor='name' >Nome</label>
                 <Field type='text' id='name' name='name'/>
                 <ErrorMessage name='name' />
+                </Card>
             
+                <Card>
                 <label htmlFor='birthDate' >Data de Nascimento</label>
                 <DatePicker
                 id='birthDate' 
@@ -74,7 +108,10 @@ const Formulario = () =>{
                 dropdownMode="select"
                 dateFormat='dd/MM/yyyy'
                 />
+                </Card>
 
+
+                <Card>
                 <label htmlFor='bookDate' >Data da Vacina</label>
                 <DatePicker 
                 id='bookDate' 
@@ -95,10 +132,16 @@ const Formulario = () =>{
                   ]}
                 dateFormat='dd/MM/yyyy h:mm aa'
                 />
+                </Card>
 
-                <button type='submit' >Submit</button>
+
+                <Button type='submit' >Submit</Button >
+
+                
+                </Col>
             </Form>
         </Formik>
+
         </div>
     )
 }
