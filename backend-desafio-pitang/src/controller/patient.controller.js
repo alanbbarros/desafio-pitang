@@ -4,8 +4,8 @@ const UserTeste = require('../models/patient.model');
 var firstSortBy = require('thenby');
 
 class patientController{
-//GET 
 
+    //GET
     async getSchedules(req, res){
 
 
@@ -15,10 +15,11 @@ class patientController{
             const newData = data.sort(firstSortBy('bookDay').thenBy('bookHour'))
             res.json(newData)
         }catch(e){
-            res.json({message: `${e} cai aqui`})
+            res.json({message: `${e} getSchedules() @ patient.controller`})
         }
     }
 
+    //POST
     async setBooking(req, res){
         try{
         const data = req.body
@@ -56,10 +57,11 @@ class patientController{
             res.send(replaceBooking)
         }
         }catch(e){
-            res.json({message: `${e} CAI AQUIII`})
+            res.json({message: `${e} setBooking() @ patient.controller`})
         }
     }
 
+    //PUT
     async updateBooking(req, res){
         const { bookingId } = req.params;
         try{
@@ -67,17 +69,18 @@ class patientController{
         const data = await UserTeste.findByIdAndUpdate(bookingId, req.body)
         res.json(data);
         }catch(e){
-            res.json({message: `${e} caimo pickBooking`})
+            res.json({message: `${e} updateBooking() @ patient.controller`})
         }
     }
 
+    //DELETE
     async deleteBooking(req, res){
         const { bookingId } = req.params;
         try{
             const schedule = await UserTeste.findByIdAndDelete(bookingId);
             res.json(schedule)
         }catch(e){
-            console.log({message: `${e} PARAMO NO DELETEBOOKING`});
+            console.log({message: `${e} deleteBooking @ patient.controller`});
         }
     }
 

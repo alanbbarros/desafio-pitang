@@ -1,24 +1,20 @@
-import { React, useState } from 'react';
+import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import DatePicker from './DatePicker'
 import * as Yup from 'yup';
-import moment from 'moment';
-import {
+import 
+{
     setHours,
     setMinutes,
-    addDays,
     getDate,
     getMonth,
     getYear,
     getHours
-  } from 'date-fns';
+} from 'date-fns';
 import axios from '../service/api';
-import {
-    Button, Col, Row, Card
-  } from 'react-bootstrap';
-import Toast from 'react-toastify';
+import { Button,  Card, Col } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import '../App.css';
-import { toast, ToastContainer } from 'react-toastify';
 
 
 const initialValues = {
@@ -49,9 +45,14 @@ const Formulario = () =>{
         }
 
         try{
+            if (patient.bookHour != 0){
             await axios.post('/schedules', patient)
             submitSucess = true;
             toast.success('Usuário Criado Com Sucesso!')
+            }
+            else{
+                toast.warn('Horário Inválido - Selecione as opções disponíveis')
+            }
         }catch(e){
             toast.warn('Algo deu errado... Tente se Cadastrar Novamente')
             console.log(e);
@@ -67,7 +68,7 @@ const Formulario = () =>{
         onSubmit={async (values, { resetForm }) => {
             await onSubmit(values);
 
-            submitSucess ? resetForm() : console.log('nao deu certo');
+            submitSucess ? resetForm() : console.log('Usuario deu submit sem selecionar horario');
         }}
         > 
             <Form autoComplete="off">
@@ -114,8 +115,6 @@ const Formulario = () =>{
                 dateFormat='dd/MM/yyyy h:mm aa'
                 />
                 </Card>
-
-
                 <Button type='submit' >Submit</Button >
 
                 
