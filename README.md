@@ -2,8 +2,8 @@
 
 React + Mongodb Atlas
 
-Installation
-1. Open the backend folder in prompt
-2. run the command: npm start
-3. Open the frontend folder in prompt
-4. run the command: npm start
+Installation - NPM
+1. Run the command npm install in prompt (backend folder)
+2. Run the command npm install in prompt (frontend folder)
+3. Run the command npm start in prompt (backend folder)
+4. Run the command npm start in prompt (backend folder)
