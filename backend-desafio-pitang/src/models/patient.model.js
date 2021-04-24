@@ -20,6 +20,10 @@ const patientSchema = mongoose.Schema({
     isVaccinated:{
         type: Boolean,
         required: true
+    },
+    annotation:{
+        type: String,
+        required: true
     }
 }, {
     timestamps: true,

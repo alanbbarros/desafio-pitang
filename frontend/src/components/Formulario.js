@@ -12,7 +12,7 @@ import {
     getYear,
     getHours
   } from 'date-fns';
-import axios from '../utils/api';
+import axios from '../service/api';
 import {
     Button, Col, Row, Card
   } from 'react-bootstrap';
@@ -37,49 +37,30 @@ let submitSucess = false;
  
 const Formulario = () =>{
  
-    const onSubmit = values =>{
-        //PEGA IDADE DO PACIENTE
-        //const today = new Date()
-        //let patientAge = today.getFullYear() - values.birthDate.getYear();
-        //const m = today.getMonth() - values.birthDate.getMonth();
-        //if (m < 0 || (m == 0 && today.getDate() < values.birthDate.getDate())){
-        //    patientAge = patientAge -1;
-        //};
+    const onSubmit = async values =>{
 
         const patient = {
             name: values.name,
             birthDate: `${getDate(values.birthDate)}/${getMonth(values.birthDate)+1}/${getYear(values.birthDate)}`,
             bookDate: `${getDate(values.bookDate)}/${getMonth(values.bookDate)+1}/${getYear(values.bookDate)}`,
             bookHour: `${getHours(values.bookDate)}`,
-            isVaccinated: false
+            isVaccinated: false,
+            annotation: ' '
         }
-        console.log(patient.bookhour === 9);
 
         try{
-            axios.post('/schedules', patient)
+            await axios.post('/schedules', patient)
             submitSucess = true;
-            return(
-                <ToastContainer
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                />
-            )
+            toast.success('Usuário Criado Com Sucesso!')
         }catch(e){
-            alert(e.response.data.message)
+            toast.warn('Algo deu errado... Tente se Cadastrar Novamente')
+            console.log(e);
         }
 
     }
 
     return(
         <div>
-        <h2>Agendamento</h2>
         <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}

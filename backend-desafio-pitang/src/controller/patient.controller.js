@@ -36,7 +36,8 @@ class patientController{
                 birthDate: data.birthDate,
                 bookDate: data.bookDate,
                 bookHour: data.bookHour,
-                isVaccinated: false
+                isVaccinated: false,
+                annotation: ' '
             })
             res.send({savedPatient})
         }
@@ -48,16 +49,14 @@ class patientController{
                     birthDate: data.birthDate,
                     bookDate: data.bookDate,
                     bookHour: data.bookHour,
-                    isVaccinated: false
+                    isVaccinated: false,
+                    annotation: ' '
                 }
                 )
             res.send(replaceBooking)
         }
-        else{
-            res.send({message: 'testando aqui '})
-        }
         }catch(e){
-            res.json({message: `${error} CAI AQUIII`})
+            res.json({message: `${e} CAI AQUIII`})
         }
     }
 

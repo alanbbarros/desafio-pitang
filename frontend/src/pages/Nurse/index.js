@@ -1,15 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import List from '../../components/List';
+import NavBar from '../../components/NavBar'
 
 
 const index = () =>{
     return(
         <div>
-            <h1>pagina do enfermeiro</h1>
+            <NavBar />
             <List />
-            <Link to='/' >Back Home</Link>
-
         </div>
     )
 }

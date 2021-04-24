@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from '../utils/api';
+import axios from '../service/api';
 import { Table, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const List = () =>{
 
     const [bookings, setBookings] = useState([]);
-    const [estadoTeste, setEstadoTeste] = useState([]);
+    const [annotation, setAnnotation] = useState([]);
 
     toast.configure();
 
@@ -17,8 +17,19 @@ const List = () =>{
         try{
             const newStatus = !booking.isVaccinated;
             const data = await axios.put(`/schedules/${booking._id}`, {isVaccinated: newStatus})
-            toast.success();
+            newStatus ? toast.success(`${booking.name} marcado como vacinado`) : toast.success(`${booking.name} marcado como não vacinado`)
             fetchBookings();
+        }catch(e){
+            console.log({message: e});
+        }
+    }
+
+    const commentHandler = async (booking) =>{
+        try{
+            const data = await axios.put(`/schedules/${booking._id}`, {annotation: annotation})
+            toast.success(`Novo Comentário adicionado ao paciente ${booking.name}`)
+            fetchBookings();
+            setAnnotation();
         }catch(e){
             console.log({message: e});
         }
@@ -27,7 +38,7 @@ const List = () =>{
     const deleteHandler = async (booking) =>{
         try{
             await axios.delete(`/schedules/${booking._id}`)
-            toast.success('Paciente Removido')
+            toast.success(`${booking.name} removido`)
             fetchBookings();
         }catch(e){
             console.log({message: e});
@@ -45,16 +56,6 @@ const List = () =>{
         }
     }
 
-    const teste = async () =>{
-        setBookings([...bookings, {
-            _id: 'a',
-            name: 'lolll',
-            birthDate: 'TESTE1',
-            bookDate: 'TESTAE',
-            bookHour: 'TESTEEE',
-            isVaccinated: true
-        }])
-    }
 
     useEffect(() => {
         fetchBookings();
@@ -69,34 +70,36 @@ const List = () =>{
                 <th>Data de Aniversário</th>
                 <th>Data da Vacina</th>
                 <th>Hora da Vacina</th>
-                <th>Status</th>
-                <th>Paciente Vacinado?</th>
+                <th>Status do Paciente</th>
+                <th>Alterar Status do Paciente</th>
+                <th>Editar Anotação</th>
+                <th>Anotações</th>
                 <th>Remover</th>
                 </tr>
             </thead>
 
             <tbody>
                 {
-                bookings.map(booking => (
+                bookings.map(booking =>{ 
+                    return(
                     <tr key={booking._id}>
                     <td>{booking.name}</td>
                     <td>{booking.birthDate}</td>
                     <td>{booking.bookDate}</td>
                     <td>{booking.bookHour}:00 {booking.bookHour > 11 ? 'PM' : 'AM'}</td>
-                    <td>{booking.isVaccinated ? 'sim' : 'nao'}</td>
-                    <td key={booking.name} ><Button onClick={() => statusHandler(booking)} >Marcar Vacinação</Button></td>
+                    <td>{booking.isVaccinated ? 'VACINADO' : 'NÃO VACINADO'}</td>
+                    <td> <Button variant='secondary' onClick={() => statusHandler(booking)} >Alterar Status</Button></td>
+                    <td>
+                    <input onChange={(e) => setAnnotation(e.target.value)} />
+                    <Button type='submit' onClick={(e) => commentHandler(booking)} >+</Button>
+                    </td>
+                    <td>{booking.annotation}</td>
                     <td><Button size='sm' variant="danger" onClick={() => deleteHandler(booking)} >Remover</Button></td>
                 </tr>
-                ))
+                )})
                 }
             </tbody>
             </Table>
-            {
-                estadoTeste.map(item =>(
-                    <h2 key={item._id} >{item}</h2>
-                ))
-            }
-            <Button onClick={() => teste()} >teste</Button>
         </div>
     )
 }
